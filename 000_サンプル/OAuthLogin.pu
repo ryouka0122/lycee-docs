@@ -1,0 +1,62 @@
+OAuthログイン
+@startuml
+/' タイトル '/
+title OAuthログインの簡易フロー図
+/' エンティティ '/
+actor User
+box "Site\nhttps://site.com/" #LightBlue
+  control mypage
+  control auth
+end box
+box "ID Provider\nhttps://id-provider.com/" #Pink
+  control oauth
+  control token
+end box
+
+/' --------------------------------------------
+OAuthログインの大まかな流れ
+-------------------------------------------- '/
+
+/' マイページにアクセス '/
+User -> mypage : 1-req. access
+activate mypage
+mypage --> User : 1-res. redirect login\n(https://id-provider.com/oauth/)
+deactivate mypage
+
+/' ログインページ表示 '/
+User -> oauth : 2-req. access oauth
+activate oauth
+oauth -> User : 2-res.  view login
+deactivate oauth
+
+/' ログイン処理 '/
+User -> oauth : 3-req. input id and password
+activate oauth
+  oauth --> User : 3-res. redirect page\n(https://site.com/auth/?code=auth_code)
+deactivate oauth
+
+/' トークン発行 '/
+User -> auth : 4-req. access auth/?code=auth_code
+activate auth
+  /' アクセストークンの発行 '/
+  auth -> token : 4-1-req. publish access token\ncode=auth_code
+  activate token
+    token -> auth : return access token
+  deactivate token
+  /' ユーザ情報取得 '/
+  auth -> token : 4-2-req. get user info using access token
+  activate token
+    token -> auth : return user info
+  deactivate token
+  auth -> auth : 4-3. create user session info
+  activate auth
+  deactivate auth
+  auth --> User : redirect mypage\n(https://site.com/mypage/)
+deactivate auth
+
+User -> mypage : 5-req. access
+activate mypage
+mypage -> User : 5-res. view mypage
+deactivate mypage
+
+@enduml
