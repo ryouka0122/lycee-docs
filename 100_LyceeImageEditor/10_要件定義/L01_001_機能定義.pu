@@ -1,0 +1,61 @@
+OAuthログイン
+@startuml
+/' タイトル '/
+title OAuthログインのフロー図
+/' エンティティ '/
+box "endUser" #LightGreen
+  actor User
+end box
+box "Client\nhttps://site.com/" #LightBlue
+  control mypage
+  control auth
+end box
+box "ID Provider\nhttps://id-provider.com/" #Pink
+  control oauth
+end box
+
+/' --------------------------------------------
+OAuthログインの大まかな流れ
+-------------------------------------------- '/
+
+/' マイページにアクセス '/
+User -> mypage : access
+activate mypage
+mypage --> User : redirect login\n(https://id-provider.com/oauth/)
+deactivate mypage
+
+/' ログインページ表示 '/
+User -> oauth : access oauth
+activate oauth
+oauth -> User : view login
+deactivate oauth
+
+/' ログイン処理 '/
+User -> oauth : input id and password
+activate oauth
+  oauth --> User : redirect page\n(https://site.com/auth/?code=auth_code)
+deactivate oauth
+
+/' トークン発行 '/
+User -> auth : access auth/?code=auth_code
+activate auth
+  /' アクセストークンの発行 '/
+  auth -> oauth : publish access token\ncode=auth_code
+  activate oauth
+    oauth -> auth : return access token
+  deactivate oauth
+  /' ユーザ情報取得 '/
+  auth -> oauth : get user info
+  activate oauth
+    oauth -> auth : return user info
+  deactivate oauth
+  auth -> auth : create user session info
+  auth --> User : redirect page\n(https://site.com/mypage/)
+deactivate auth
+
+User -> mypage : access
+activate mypage
+mypage -> User : view mypage
+deactivate mypage
+
+@enduml
