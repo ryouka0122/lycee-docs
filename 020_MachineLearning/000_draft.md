@@ -26,7 +26,7 @@
         * 蟻コロニー最適化法 Ant Colony Optimization
         * 粒子群最適化法 Particle Swarm Optimization
       * 遺伝的アルゴリズム GA: Genetic Algorithm
-  * 統計的処理
+  * 統計的処理  
     学習データを統計的確率によって得られたものであると仮定し，数学的処理を行う．
     * 統計的分析
       * 回帰分析
